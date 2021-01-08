@@ -51,9 +51,25 @@ mylogger.debug("Current TIMEINMONTHSFieldValue: ${TIMEINMONTHSFieldValue}")
 //long CurrentDateMillisecs=CurrentDate.getTime()
 //mylogger.debug( "CurrentDate: $CurrentDate (CurrentDateMillisecs:$CurrentDateMillisecs)")
 
-def CalibrationDate=new Date().parse('yyyy-MM-dd',CalibratedFieldValue.toString()).format('yyyy-MM-dd')
-mylogger.debug( "CalibrationDate: $CalibrationDate ")
+//def CalibrationDate=new Date().parse('yyyy-MM-dd',CalibratedFieldValue.toString()).format('yyyy-MM-dd')
+//long CalibrationDateMillisecs=CalibrationDate.getTime()
+//mylogger.debug( "CalibrationDate: $CalibrationDate  ..... CalibrationDateMillisecs:$CalibrationDateMillisecs ")
 
+
+def DateAsString = CalibratedFieldValue.toString()
+def kaak="1999-12-15"
+Date CalibrationDate=new Date().parse('yyyy-MM-dd',DateAsString) //.format('yyyy-MM-dd')
+long CalibrationDateMillisecs=CalibrationDate.getTime()
+mylogger.debug( "CalibrationDate: $CalibrationDate  ..... CalibrationDateMillisecs:$CalibrationDateMillisecs ")
+int MonthsValue = TIMEINMONTHSFieldValue as Integer
+
+long okTimePeriodMillisecs=(MonthsValue)*30*24*60*1000
+def NewCalibrationDateMillisecs=CalibrationDateMillisecs+okTimePeriodMillisecs
+
+
+Date NewCalibrationDate= new Date(NewCalibrationDateMillisecs)
+
+mylogger.debug( "NewCalibrationDate: $NewCalibrationDate   ")
 
 /* --------------------------------------------------------------------------------------------------------------------------------
  Get custom field value.
