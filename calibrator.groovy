@@ -13,6 +13,9 @@ import org.apache.log4j.Level
 import java.util.regex.Pattern
 
 import java.text.SimpleDateFormat
+import java.sql.Timestamp
+import java.text.DateFormat
+import java.util.Date
 
 
 
@@ -36,17 +39,20 @@ def CustomFieldManager = ComponentAccessor.getCustomFieldManager()
 mylogger.info("Processing calibration dates for issue: $issue")
 
 
-CalibratedObject=CustomFieldManager.getCustomFieldObjectsByName(CALIBRATED).find()
-CalibratedFieldValue=issue.getCustomFieldValue(CalibratedObject)
+
+def CalibratedFieldValue=GetCustomFieldValue(CALIBRATED,mylogger,CustomFieldManager)
 mylogger.debug("Current CalibratedFieldValue: ${CalibratedFieldValue}")
 
-TIMEINMONTHSObject=CustomFieldManager.getCustomFieldObjectsByName(TIMEINMONTHS).find()
-TIMEINMONTHSFieldValue=issue.getCustomFieldValue(TIMEINMONTHSObject)
+
+def TIMEINMONTHSFieldValue=GetCustomFieldValue(TIMEINMONTHS,mylogger,CustomFieldManager)
 mylogger.debug("Current TIMEINMONTHSFieldValue: ${TIMEINMONTHSFieldValue}")
 
+//Date CalibratedDate=new Date()
+//long CurrentDateMillisecs=CurrentDate.getTime()
+//mylogger.debug( "CurrentDate: $CurrentDate (CurrentDateMillisecs:$CurrentDateMillisecs)")
 
-
-
+def CalibrationDate=new Date().parse('yyyy-MM-dd',CalibratedFieldValue.toString()).format('yyyy-MM-dd')
+mylogger.debug( "CalibrationDate: $CalibrationDate ")
 
 
 /* --------------------------------------------------------------------------------------------------------------------------------
@@ -57,10 +63,10 @@ mylogger.debug("Current TIMEINMONTHSFieldValue: ${TIMEINMONTHSFieldValue}")
 							 
 	 def CustomFieldObject=CustomFieldManager.getCustomFieldObjectsByName(CustomFieldName).find()
 	 assert CustomFieldObject : "Problems with customfield (${CustomFieldName}). Check Jira Config and automation code"
-	 mylogger.debug("${CustomFieldName}: ${CustomFieldObject}")
+	 mylogger.debug("==> ${CustomFieldName}: ${CustomFieldObject}")
 	 CustomFieldValue=issue.getCustomFieldValue(CustomFieldObject)
 	 assert CustomFieldValue :  "Problems with customfield (${CustomFieldName}). Check Jira Config and automation code"
-	 mylogger.info("${CustomFieldName}: ${CustomFieldValue}")
+	 mylogger.info("==> ${CustomFieldName}: ${CustomFieldValue}")
 	 
 	 return CustomFieldValue
 							 
