@@ -29,13 +29,13 @@ def NEXTCALIBRATION="Next calibration required date"
 // set logging to Jira log
 def Logger mylogger
 mylogger = Logger.getLogger("Calibrator")
-mylogger.setLevel(Level.DEBUG) // or INFO (prod) or DEBUG (development)
+mylogger.setLevel(Level.INFO ) // or INFO (prod) or DEBUG (development)
 def CustomFieldManager = ComponentAccessor.getCustomFieldManager()
 // ----END OF CONFIGURATIONS-------------------------------------------------------------------------------------------------------------------------
 
 
 
-
+mylogger.info("------------------------------------------------------------------------------------------------")
 mylogger.info("Processing calibration dates for issue: $issue")
 
 
@@ -45,30 +45,23 @@ mylogger.debug("Current CalibratedFieldValue: ${CalibratedFieldValue}")
 
 
 def TIMEINMONTHSFieldValue=GetCustomFieldValue(TIMEINMONTHS,mylogger,CustomFieldManager)
-mylogger.debug("Current TIMEINMONTHSFieldValue: ${TIMEINMONTHSFieldValue}")
-
-//Date CalibratedDate=new Date()
-//long CurrentDateMillisecs=CurrentDate.getTime()
-//mylogger.debug( "CurrentDate: $CurrentDate (CurrentDateMillisecs:$CurrentDateMillisecs)")
-//def CalibrationDate=new Date().parse('yyyy-MM-dd',CalibratedFieldValue.toString()).format('yyyy-MM-dd')
-//long CalibrationDateMillisecs=CalibrationDate.getTime()
-//mylogger.debug( "CalibrationDate: $CalibrationDate  ..... CalibrationDateMillisecs:$CalibrationDateMillisecs ")
+mylogger.debug("Current valid moths value: ${TIMEINMONTHSFieldValue}")
 
 
 def DateAsString = CalibratedFieldValue.toString()
-Date CalibrationDate=new Date().parse('yyyy-MM-dd',DateAsString) //.format('yyyy-MM-dd')
+Date CalibrationDate=new Date().parse('yyyy-MM-dd',DateAsString) 
 int MonthsValue = TIMEINMONTHSFieldValue as Integer
+
 // from import groovy.time.TimeCategory
 def timeahead
 def getted
 Timestamp Deadeline
-
 use(TimeCategory) {
 	timeahead=CalibrationDate + MonthsValue.months
     Deadeline=new Timestamp(timeahead.getTime())
 }
-mylogger.debug( "timeahead: $timeahead   ")
-mylogger.debug( "Deadeline: $Deadeline   ")
+mylogger.debug( "New calibration date: $timeahead   ")
+mylogger.debug( "New calibration datestamp: $Deadeline   ")
 
 // Set new calibration date field
 def NextDatecustomField = CustomFieldManager.getCustomFieldObjects(issue).find { it.name == NEXTCALIBRATION }
@@ -77,12 +70,10 @@ assert NextDatecustomField: "Could not find custom field with name $NEXTCALIBRAT
 DateFormat TheFormat = new SimpleDateFormat("yyyy-mm-dd")  // : Mon Mar 15 00:00:00 EET 2021
 
 String SStingTimeAhead = TheFormat.format(timeahead)
-mylogger.debug( "SStingTimeAhead: $SStingTimeAhead   ")
-//def gettted=timeahead.getMillisecond()
-//mylogger.debug( "getted: $getted   ")
-//String StingTimeAhead ="2021-09-15"
-//mylogger.debug( "timeStingTimeAheadahead: $timeaStingTimeAheadhead   ")
+mylogger.info( "Setting new calibration datefield ($NEXTCALIBRATION): $Deadeline   ")
 issue.setCustomFieldValue(NextDatecustomField, Deadeline)
+mylogger.info("------------------------------------------------------------------------------------------------")
+
 
 /* --------------------------------------------------------------------------------------------------------------------------------
  Get custom field value.
