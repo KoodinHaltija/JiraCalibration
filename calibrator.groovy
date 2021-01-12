@@ -50,38 +50,39 @@ mylogger.debug("Current TIMEINMONTHSFieldValue: ${TIMEINMONTHSFieldValue}")
 //Date CalibratedDate=new Date()
 //long CurrentDateMillisecs=CurrentDate.getTime()
 //mylogger.debug( "CurrentDate: $CurrentDate (CurrentDateMillisecs:$CurrentDateMillisecs)")
-
 //def CalibrationDate=new Date().parse('yyyy-MM-dd',CalibratedFieldValue.toString()).format('yyyy-MM-dd')
 //long CalibrationDateMillisecs=CalibrationDate.getTime()
 //mylogger.debug( "CalibrationDate: $CalibrationDate  ..... CalibrationDateMillisecs:$CalibrationDateMillisecs ")
 
 
 def DateAsString = CalibratedFieldValue.toString()
-def kaak="1999-12-15"
 Date CalibrationDate=new Date().parse('yyyy-MM-dd',DateAsString) //.format('yyyy-MM-dd')
-long CalibrationDateMillisecs=CalibrationDate.getTime()
-mylogger.debug( "CalibrationDate: $CalibrationDate  ..... CalibrationDateMillisecs:$CalibrationDateMillisecs ")
 int MonthsValue = TIMEINMONTHSFieldValue as Integer
-
-long okTimePeriodMillisecs=(MonthsValue)*30*24*60*60*1000
-def NewCalibrationDateMillisecs=CalibrationDateMillisecs+okTimePeriodMillisecs
-
-
-Date NewCalibrationDate= new Date(NewCalibrationDateMillisecs)
-
-mylogger.debug( "NewCalibrationDate: $NewCalibrationDate   ")
-mylogger.debug( "okTimePeriodMillisecs: $okTimePeriodMillisecs   ")
-
-
-// import groovy.time.TimeCategory
+// from import groovy.time.TimeCategory
 def timeahead
+def getted
+Timestamp Deadeline
+
 use(TimeCategory) {
 	timeahead=CalibrationDate + MonthsValue.months
-	mylogger.debug( "timeahead: $timeahead   ")
+    Deadeline=new Timestamp(timeahead.getTime())
 }
 mylogger.debug( "timeahead: $timeahead   ")
+mylogger.debug( "Deadeline: $Deadeline   ")
 
+// Set new calibration date field
+def NextDatecustomField = CustomFieldManager.getCustomFieldObjects(issue).find { it.name == NEXTCALIBRATION }
+assert NextDatecustomField: "Could not find custom field with name $NEXTCALIBRATION"
+//DateFormat TheFormat = new SimpleDateFormat("E MMM dd hh:mm:ss Z yyyy ")  // : Mon Mar 15 00:00:00 EET 2021
+DateFormat TheFormat = new SimpleDateFormat("yyyy-mm-dd")  // : Mon Mar 15 00:00:00 EET 2021
 
+String SStingTimeAhead = TheFormat.format(timeahead)
+mylogger.debug( "SStingTimeAhead: $SStingTimeAhead   ")
+//def gettted=timeahead.getMillisecond()
+//mylogger.debug( "getted: $getted   ")
+//String StingTimeAhead ="2021-09-15"
+//mylogger.debug( "timeStingTimeAheadahead: $timeaStingTimeAheadhead   ")
+issue.setCustomFieldValue(NextDatecustomField, Deadeline)
 
 /* --------------------------------------------------------------------------------------------------------------------------------
  Get custom field value.
