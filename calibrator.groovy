@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat
 import java.sql.Timestamp
 import java.text.DateFormat
 import java.util.Date
-
+import groovy.time.TimeCategory
 
 
 // ----CONFIGURATIONS------------------------------------------------------------------------------------------------------------------------------
@@ -63,13 +63,25 @@ long CalibrationDateMillisecs=CalibrationDate.getTime()
 mylogger.debug( "CalibrationDate: $CalibrationDate  ..... CalibrationDateMillisecs:$CalibrationDateMillisecs ")
 int MonthsValue = TIMEINMONTHSFieldValue as Integer
 
-long okTimePeriodMillisecs=(MonthsValue)*30*24*60*1000
+long okTimePeriodMillisecs=(MonthsValue)*30*24*60*60*1000
 def NewCalibrationDateMillisecs=CalibrationDateMillisecs+okTimePeriodMillisecs
 
 
 Date NewCalibrationDate= new Date(NewCalibrationDateMillisecs)
 
 mylogger.debug( "NewCalibrationDate: $NewCalibrationDate   ")
+mylogger.debug( "okTimePeriodMillisecs: $okTimePeriodMillisecs   ")
+
+
+// import groovy.time.TimeCategory
+def timeahead
+use(TimeCategory) {
+	timeahead=CalibrationDate + MonthsValue.months
+	mylogger.debug( "timeahead: $timeahead   ")
+}
+mylogger.debug( "timeahead: $timeahead   ")
+
+
 
 /* --------------------------------------------------------------------------------------------------------------------------------
  Get custom field value.
